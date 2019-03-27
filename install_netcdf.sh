@@ -23,6 +23,10 @@ set -e
 #    Daniel Santiago
 #    github/dspelaez
 #
+#  Update 20190322
+#     + libpng
+#     + jasperlib
+#
 # ============================================================================
 
 ## define compilers
@@ -32,11 +36,13 @@ F90=${FC}
 F77=${FC}
 
 # main directory
-MAINDIR=${MAINDIR:-/usr/local/netcdf}
+MAINDIR=${MAINDIR:-/share/apps/netcdf-4.6.1}
 
 # version of libs
-CLTAG="7.61.0"
-ZLTAG="1.2.10"
+#CLTAG="7.61.0"
+ZLTAG="1.2.11"
+JLTAG="1.900.29"
+PNGTAG="1.6.36"
 H5TAG="1.10.1"
 NCTAG="4.6.1"
 NFTAG="4.4.4"
@@ -44,6 +50,8 @@ NFTAG="4.4.4"
 ## donwload source code of depencies
 wget -nc -nv https://curl.haxx.se/download/curl-$CLTAG.tar.gz
 wget -nc -nv https://zlib.net/fossils/zlib-$ZLTAG.tar.gz
+wget -nc -nv https://www.ece.uvic.ca/~frodo/jasper/software/jasper-$JLTAG.tar.gz
+wget -nc -nv https://download.sourceforge.net/libpng/libpng-$PNGTAG.tar.gz
 wget -nc -nv https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-$H5TAG/src/hdf5-$H5TAG.tar 
 wget -nc -nv ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-$NCTAG.tar.gz
 wget -nc -nv ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-$NFTAG.tar.gz
@@ -62,7 +70,6 @@ make install > config.log 2>&1
 cd ..
 rm -rf curl-$CLTAG
 
-
 ## zlib 
 tar -xf zlib-$ZLTAG.tar.gz
 cd zlib-$ZLTAG/
@@ -73,6 +80,28 @@ make -j4 > config.log 2>&1
 make install > config.log 2>&1
 cd ..
 rm -rf zlib-$ZLTAG
+
+## jasperlib
+tar -xf jasper-$JLTAG.tar.gz
+cd jasper-$JLTAG/
+JLDIR=$MAINDIR
+echo " --->> Compiling jasperlib-$JLTAG"
+./configure --prefix=${JLDIR} > config.log 2>&1
+make -j4 > config.log 2>&1
+make install > config.log 2>&1
+cd ..
+rm -rf jasper-$JLTAG
+
+## libpng
+tar -xf libpng-$PNGTAG.tar.gz
+cd libpng-$PNGTAG/
+PNGDIR=$MAINDIR
+echo " --->> Compiling libpng-$PNGTAG"
+./configure --prefix=${PNGDIR} > config.log 2>&1
+make -j4 > config.log 2>&1
+make install > config.log 2>&1
+cd ..
+rm -rf libpng-$PNGTAG
 
 ## hdf5
 tar -xf hdf5-$H5TAG.tar
